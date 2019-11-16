@@ -30,6 +30,9 @@ module.exports = {
     'prettier/prettier': 'error',
     'import/prefer-default-export': 'off',
     'react/static-property-placement': 'off',
+    'order': [
+      'static-methods',
+    ],
     'react/jsx-filename-extension': [
       'warn',
       { extensions: ['.jsx', '.js'] }
