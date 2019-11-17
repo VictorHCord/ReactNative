@@ -84,3 +84,22 @@ export const ProfileButtonText = styled.Text`
   color: #fff;
   text-transform: uppercase;
 `;
+
+export const ProfileButtonClosed = styled(RectButton)`
+  margin-top: 10px;
+  margin-bottom: 10px;
+  flex: 1;
+  background: #ff0000;
+  align-self: stretch;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  height: 36px;
+`;
+
+export const ButtoClosed = styled.Text`
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+`;

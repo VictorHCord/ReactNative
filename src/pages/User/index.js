@@ -19,6 +19,9 @@ import {
 
 } from './styles';
 
+
+
+
 export default class User extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('user').name,
@@ -33,6 +36,8 @@ export default class User extends Component {
   state = {
     stars: [],
     loading: true,
+    page: 1,
+    user: {},
   };
 
   /* Vai executar automaticamente quando usuario entrar */
@@ -41,12 +46,25 @@ export default class User extends Component {
     const user = navigation.getParam('user');
 
     const response = await api.get(`/users/${user.login}/starred`);
+    this.setState({ stars: response.data , loading: false,user });
 
-    this.setState({ stars: response.data , loading: false});
+
   }
 
+  load = async(page = 1 ) => {
+    const {user,stars} = this.state;
+    const response = await api.get(`/users/${user.login}/starred?page=${page}`);
 
+    this.setState({
+      star: page === 1 ? [...response.data] : [...stars, ...response.data],
+      page,
+    });
+  }
+  loadMore = async () => {
+    const { page } = this.state;
 
+    this.load(page + 1);
+  };
   render() {
     const { navigation } = this.props;
     const { stars , loading} = this.state;
@@ -60,6 +78,8 @@ export default class User extends Component {
         </Header>
         {loading ? (<ActivityIndicator size={60}/>) : (
         <Stars
+          onEndReachedThreshold={0.2}
+          onEndReached={this.loadMore}
           data={stars}
           keyExtractor={star => String(star.id)}
           renderItem={({ item }) =>  (

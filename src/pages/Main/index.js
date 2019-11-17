@@ -17,6 +17,9 @@ import {
   Bio,
   ProfileButton,
   ProfileButtonText,
+  ProfileButtonClosed,
+  ButtoClosed
+
 } from './styles';
 
 export default class Main extends Component {
@@ -37,6 +40,7 @@ export default class Main extends Component {
     /* Vai armazenar os itens */
     users: [],
     loading: false,
+    message: '',
   };
 
   /* Vai buscar os dados no Storage */
@@ -46,6 +50,8 @@ export default class Main extends Component {
     if (users) {
       this.setState({ users: JSON.parse(users) });
     }
+
+
   }
 
   /* Vai executar quando houver alterações no user */
@@ -55,7 +61,11 @@ export default class Main extends Component {
     if (prevState.users !== users) {
       AsyncStorage.setItem('users', JSON.stringify(users));
     }
+
+
   }
+
+
 
   handleAddUser = async () => {
     const { users, newUser } = this.state;
@@ -83,6 +93,19 @@ export default class Main extends Component {
 
     navigation.navigate('User', { user });
   };
+
+
+
+  clearAsyncStorage = async () => {
+
+    AsyncStorage.removeItem('users');
+    this.setState({
+      users: []
+
+    });
+
+  };
+
 
   render() {
     const { users, newUser, loading } = this.state;
@@ -112,12 +135,16 @@ export default class Main extends Component {
           keyExtractor={user => user.login}
           renderItem={({ item }) => (
             <User>
+
               <Avatar source={{ uri: item.avatar }} />
               <Name>{item.name}</Name>
               <Bio>{item.bio}</Bio>
               <ProfileButton onPress={() => this.handleNavigate(item)}>
                 <ProfileButtonText>Ver perfil</ProfileButtonText>
               </ProfileButton>
+                  <ProfileButtonClosed onPress={() => this.clearAsyncStorage()}>
+                  <ButtoClosed>Deletar</ButtoClosed>
+                </ProfileButtonClosed>
             </User>
           )}
         />
