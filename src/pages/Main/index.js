@@ -38,37 +38,29 @@ export default class Main extends Component {
     newUser: '',
 
     /* Vai armazenar os itens */
-    users: [],
+    gitUser: [],
     loading: false,
-    message: '',
   };
 
   /* Vai buscar os dados no Storage */
   async componentDidMount() {
-    const users = await AsyncStorage.getItem('users');
+    const gitUser = await AsyncStorage.getItem('gitUser');
 
-    if (users) {
-      this.setState({ users: JSON.parse(users) });
+    if (gitUser) {
+      this.setState({ gitUser: JSON.parse(gitUser) });
     }
-
-
   }
-
   /* Vai executar quando houver alterações no user */
   componentDidUpdate(_, prevState) {
-    const { users } = this.state;
+    const { gitUser } = this.state;
 
-    if (prevState.users !== users) {
-      AsyncStorage.setItem('users', JSON.stringify(users));
+    if (prevState.gitUser !== gitUser) {
+      AsyncStorage.setItem('gitUser', JSON.stringify(gitUser));
     }
-
-
   }
 
-
-
   handleAddUser = async () => {
-    const { users, newUser } = this.state;
+    const { gitUser, newUser } = this.state;
 
     this.setState({ loading: true });
 
@@ -81,12 +73,13 @@ export default class Main extends Component {
       avatar: response.data.avatar_url,
     };
     this.setState({
-      users: [...users, data],
+      gitUser: [...gitUser, data],
       newUser: '',
       loading: false,
     });
     Keyboard.dismiss();
   };
+
 
   handleNavigate = user => {
     const { navigation } = this.props;
@@ -94,21 +87,19 @@ export default class Main extends Component {
     navigation.navigate('User', { user });
   };
 
-
-
-  clearAsyncStorage = async () => {
-
-    AsyncStorage.removeItem('users');
+  clearAsyncStorage = async id => {
+    const { gitUser } = this.state;
+    gitUser.splice(id, 1);
+    await AsyncStorage.setItem('gitUser', JSON.stringify(gitUser));
     this.setState({
-      users: []
-
-    });
-
+      gitUser: JSON.parse(await AsyncStorage.getItem('gitUser'))
+    })
   };
 
-
   render() {
-    const { users, newUser, loading } = this.state;
+    const { gitUser, newUser, loading } = this.state;
+
+
     return (
       <Container>
         <Form>
@@ -131,7 +122,7 @@ export default class Main extends Component {
         </Form>
 
         <List
-          data={users}
+          data={gitUser}
           keyExtractor={user => user.login}
           renderItem={({ item }) => (
             <User>
