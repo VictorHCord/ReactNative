@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Keyboard, ActivityIndicator } from 'react-native';
+import { Keyboard, ActivityIndicator, Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import api from '../../services/api';
@@ -18,8 +18,7 @@ import {
   ProfileButton,
   ProfileButtonText,
   ProfileButtonClosed,
-  ButtoClosed
-
+  ButtoClosed,
 } from './styles';
 
 export default class Main extends Component {
@@ -64,42 +63,51 @@ export default class Main extends Component {
 
     this.setState({ loading: true });
 
-    const response = await api.get(`/users/${newUser}`);
+    const verifyUser = gitUser.find(user => user.login);
 
-    const data = {
-      name: response.data.name,
-      login: response.data.login,
-      bio: response.data.bio,
-      avatar: response.data.avatar_url,
-    };
-    this.setState({
-      gitUser: [...gitUser, data],
-      newUser: '',
-      loading: false,
-    });
-    Keyboard.dismiss();
+    if (newUser !== '' && !verifyUser) {
+      const response = await api.get(`/users/${newUser}`);
+
+      const data = {
+        name: response.data.name,
+        login: response.data.login,
+        bio: response.data.bio,
+        avatar: response.data.avatar_url,
+      };
+      this.setState({
+        gitUser: [...gitUser, data],
+        newUser: '',
+        loading: false,
+      });
+
+      Keyboard.dismiss();
+    } else {
+      Alert.alert('Erro', 'Por gentileza informe um usuário.');
+
+      this.setState({
+        loading: false,
+      });
+    }
   };
-
 
   handleNavigate = user => {
     const { navigation } = this.props;
-
     navigation.navigate('User', { user });
   };
 
   clearAsyncStorage = async id => {
     const { gitUser } = this.state;
-    gitUser.splice(id, 1);
+    const index = gitUser.indexOf(id);
+
+    gitUser.splice(index, 1);
     await AsyncStorage.setItem('gitUser', JSON.stringify(gitUser));
     this.setState({
-      gitUser: JSON.parse(await AsyncStorage.getItem('gitUser'))
-    })
+      gitUser: JSON.parse(await AsyncStorage.getItem('gitUser')),
+    });
   };
 
   render() {
     const { gitUser, newUser, loading } = this.state;
-
-
     return (
       <Container>
         <Form>
@@ -126,16 +134,15 @@ export default class Main extends Component {
           keyExtractor={user => user.login}
           renderItem={({ item }) => (
             <User>
-
               <Avatar source={{ uri: item.avatar }} />
               <Name>{item.name}</Name>
               <Bio>{item.bio}</Bio>
               <ProfileButton onPress={() => this.handleNavigate(item)}>
                 <ProfileButtonText>Ver perfil</ProfileButtonText>
               </ProfileButton>
-                  <ProfileButtonClosed onPress={() => this.clearAsyncStorage()}>
-                  <ButtoClosed>Deletar</ButtoClosed>
-                </ProfileButtonClosed>
+              <ProfileButtonClosed onPress={() => this.clearAsyncStorage()}>
+                <ButtoClosed>Deletar</ButtoClosed>
+              </ProfileButtonClosed>
             </User>
           )}
         />
