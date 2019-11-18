@@ -37,7 +37,6 @@ export default class User extends Component {
     stars: [],
     loading: true,
     page: 1,
-    user: {},
   };
 
   /* Vai executar automaticamente quando usuario entrar */
@@ -47,24 +46,27 @@ export default class User extends Component {
 
     const response = await api.get(`/users/${user.login}/starred`);
     this.setState({ stars: response.data , loading: false,user });
-
-
   }
 
-  load = async(page = 1 ) => {
-    const {user,stars} = this.state;
+  loadMore = async() => {
+    const {loading, page, stars} = this.state;
+    const {navigation} = this.props;
+    const user = navigation.getParam('user');
+
+    if(loading) return;
+
+
+
     const response = await api.get(`/users/${user.login}/starred?page=${page}`);
 
     this.setState({
-      star: page === 1 ? [...response.data] : [...stars, ...response.data],
-      page,
-    });
+      stars: page >= 2 ?  [...stars, ...response.data] : response.data,
+      page: page + 1,
+      loading: false,
+    })
   }
-  loadMore = async () => {
-    const { page } = this.state;
 
-    this.load(page + 1);
-  };
+
   render() {
     const { navigation } = this.props;
     const { stars , loading} = this.state;
