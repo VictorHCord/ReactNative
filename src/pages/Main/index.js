@@ -37,35 +37,33 @@ export default class Main extends Component {
     newUser: '',
 
     /* Vai armazenar os itens */
-    gitUser: [],
+    UserLogin: [],
     loading: false,
   };
 
   /* Vai buscar os dados no Storage */
   async componentDidMount() {
-    const gitUser = await AsyncStorage.getItem('gitUser');
+    const UserLogin = await AsyncStorage.getItem('UserLogin');
 
-    if (gitUser) {
-      this.setState({ gitUser: JSON.parse(gitUser) });
+    if (UserLogin) {
+      this.setState({ UserLogin: JSON.parse(UserLogin) });
     }
   }
   /* Vai executar quando houver alterações no user */
   componentDidUpdate(_, prevState) {
-    const { gitUser } = this.state;
+    const { UserLogin } = this.state;
 
-    if (prevState.gitUser !== gitUser) {
-      AsyncStorage.setItem('gitUser', JSON.stringify(gitUser));
+    if (prevState.UserLogin !== UserLogin) {
+      AsyncStorage.setItem('UserLogin', JSON.stringify(UserLogin));
     }
   }
 
   handleAddUser = async () => {
-    const { gitUser, newUser } = this.state;
+    const { UserLogin, newUser } = this.state;
 
     this.setState({ loading: true });
 
-    const verifyUser = gitUser.find(user => user.login);
-
-    if (newUser !== '' && !verifyUser) {
+    if (newUser !== '') {
       const response = await api.get(`/users/${newUser}`);
 
       const data = {
@@ -75,7 +73,7 @@ export default class Main extends Component {
         avatar: response.data.avatar_url,
       };
       this.setState({
-        gitUser: [...gitUser, data],
+        UserLogin: [...UserLogin, data],
         newUser: '',
         loading: false,
       });
@@ -96,18 +94,18 @@ export default class Main extends Component {
   };
 
   clearAsyncStorage = async id => {
-    const { gitUser } = this.state;
-    const index = gitUser.indexOf(id);
+    const { UserLogin } = this.state;
+    const index = UserLogin.indexOf(id);
 
-    gitUser.splice(index, 1);
-    await AsyncStorage.setItem('gitUser', JSON.stringify(gitUser));
+    UserLogin.splice(index, 1);
+    await AsyncStorage.setItem('UserLogin', JSON.stringify(UserLogin));
     this.setState({
-      gitUser: JSON.parse(await AsyncStorage.getItem('gitUser')),
+      UserLogin: JSON.parse(await AsyncStorage.getItem('UserLogin')),
     });
   };
 
   render() {
-    const { gitUser, newUser, loading } = this.state;
+    const { UserLogin, newUser, loading } = this.state;
     return (
       <Container>
         <Form>
@@ -130,7 +128,7 @@ export default class Main extends Component {
         </Form>
 
         <List
-          data={gitUser}
+          data={UserLogin}
           keyExtractor={user => user.login}
           renderItem={({ item }) => (
             <User>
