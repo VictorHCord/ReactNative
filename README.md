@@ -1,8 +1,10 @@
 <h1 align="center">
     <img alt="GoStack" src="https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/bootcamp-header.png" width="200px" />
-  Desafio 6: Primeiro projeto com React Native
 </h1>
 
+<h1 align="center">
+ Desafio 6: Primeiro projeto com React Native
+</h1>
 ## :rocket: Sobre o desafio.
 
 Otimizar o projeto feito durante o curso de React Native
