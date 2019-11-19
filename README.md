@@ -5,6 +5,7 @@
 <h1 align="center">
  Desafio 6: Primeiro projeto com React Native
 </h1>
+
 ## :rocket: Sobre o desafio.
 
 Otimizar o projeto feito durante o curso de React Native
